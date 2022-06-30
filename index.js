@@ -32,14 +32,25 @@ async function run() {
   try {
     await client.connect();
     const taskCollection = client.db("todo-task").collection("task");
+    const completeTaskCollection = client.db("todo-task").collection("complete-task");
 
     console.log("MongoDB is running.......");
 
 
-    
+    app.get("/task", async (req, res) => {
+      const tasks = await taskCollection.find().toArray();
+      res.send(tasks);
+    });
+
     app.post("/task", async (req, res) => {
       const task = req.body;
       const result = await taskCollection.insertOne(task);
+      res.send(result);
+    });
+
+    app.post("/complete", async (req, res) => {
+      const task = req.body;
+      const result = await completeTaskCollection.insertOne(task);
       res.send(result);
     });
 
