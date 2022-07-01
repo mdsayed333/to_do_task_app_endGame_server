@@ -3,7 +3,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 app.use(cors());
 app.use(express.json());
@@ -21,12 +21,6 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
-// client.connect((err) => {
-//   const collection = client.db("test").collection("devices");
-//   console.log("MongoDB is running.......");
-//   // perform actions on the collection object
-//   client.close();
-// });
 
 async function run() {
   try {
@@ -46,6 +40,19 @@ async function run() {
       const task = req.body;
       const result = await taskCollection.insertOne(task);
       res.send(result);
+    });
+
+    app.delete("/task/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await taskCollection.deleteOne(query);
+      res.send(result);
+    });
+
+
+    app.get("/complete", async (req, res) => {
+      const tasks = await completeTaskCollection.find().toArray();
+      res.send(tasks);
     });
 
     app.post("/complete", async (req, res) => {
