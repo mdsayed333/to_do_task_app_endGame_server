@@ -50,6 +50,30 @@ async function run() {
     });
 
 
+
+
+    // Call from update task
+    app.put("/task/:id", async (req, res) => {
+      const id = req.params.id;
+      const newTask = req.body;
+      const filter = { _id: ObjectId(id) };
+      const option = { upsert: true };
+      const updateTask = {
+        $set: {
+          task: newTask.task,
+        },
+      };
+      const result = await taskCollection.updateOne(
+        filter,
+        updateTask,
+        option
+      );
+      res.send(result);
+    });
+
+
+
+
     app.get("/complete", async (req, res) => {
       const tasks = await completeTaskCollection.find().toArray();
       res.send(tasks);
@@ -80,7 +104,7 @@ run().catch(console.dir);
 
 
 app.get("/", (req, res) => {
-  res.send("Hello from To Do Task app!");
+  res.send("Hello from To Do Task app For Endgame!!!");
 });
 
 app.listen(port, () => {
